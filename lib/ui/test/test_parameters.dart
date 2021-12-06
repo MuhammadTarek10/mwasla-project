@@ -14,6 +14,8 @@ final List MENU_TEXTS = ["حسابي", "رحلاتي", "محفظتي", "مساع
 
 final List MENU_ICONS = [PROFILE, RA7LAT, PROFILE, HELP];
 
+final LOGOUT_TEXT = "تسجيل الخروج";
+
 final List BOTTOM_NAVIGATION_TITLES = [
   "Taxi",
   "Train",

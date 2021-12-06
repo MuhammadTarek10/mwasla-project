@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mwasla_app/main.dart';
-import 'package:mwasla_app/ui/home/main_screen.dart';
 import 'package:mwasla_app/ui/main/login_page.dart';
+import 'package:mwasla_app/ui/widgets/login_and_register_widgets.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -12,7 +11,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _auth = FirebaseAuth.instance;
+
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -32,64 +32,32 @@ class _RegisterPageState extends State<RegisterPage> {
       key: _scaffoldKey,
       body: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            inputField(emailController: _emailController, hintText: "Email Address"),
-            inputField(emailController: _passwordController, hintText: "Password"),
-            ElevatedButton(
-              child: Text("Sign Up",
-                  style: TextStyle(color: Colors.white, fontSize: 24.0)),
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  registerUser(context);
-                } else {
-                  showDialog(
-                      context: context,
-                      builder: (context) => Text('Incorrect Details'));
-                }
-              },
-            ),
-            TextButton(
-                onPressed: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => LoginPage())),
-                child: Text("Already Have an Account! Sign in"))
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: MediaQuery.of(context).size.height * 0.2,
+              horizontal: MediaQuery.of(context).size.width * 0.05),
+          child: Column(
+            children: [
+              InputField(
+                  emailController: _emailController, hintText: "Email Address"),
+              InputField(
+                  emailController: _passwordController, hintText: "Password"),
+              ButtonsToClick(
+                  formkey: _formKey,
+                  text: "Sign Up",
+                  pageContext: context,
+                  emailController: _emailController,
+                  passwordController: _passwordController,
+                  auth: auth,
+                  isRegister: true),
+              TextButton(
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => LoginPage())),
+                  child: const Text("Already Have an Account! Sign in"))
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  void registerUser(BuildContext context) async {
-    final User user = (await _auth.createUserWithEmailAndPassword(
-            email: _emailController.text, password: _passwordController.text))
-        .user!;
-    if (user != null) {
-      Map userDataMap = {
-        "name": "test",
-        "emai": _emailController.text,
-        "phone": "testphone",
-        "password": _passwordController.text,
-      };
-      usersRef.child(user.uid).set(userDataMap);
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => LoginPage()));
-    }
-  }
-}
-
-class inputField extends StatelessWidget {
-  const inputField({Key? key, required this.emailController, required this.hintText})
-      : super(key: key);
-
-  final TextEditingController emailController;
-  final String hintText;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      keyboardType: TextInputType.emailAddress,
-      controller: emailController,
-      decoration: InputDecoration(hintText: hintText),
     );
   }
 }
